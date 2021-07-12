@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.gonggo.CompanyMapper">
+	<select id="getAlldatas" resultType="company">
+		select * from company order by num desc; 
+	</select>
+	<select id="getmygonggo" resultType="company" parameterType="String">
+		select * from company where empname=#{empname} order by amount desc, deadline asc; 
+	</select>
+	<resultMap type="company" id="company-selectmap">
+		<id property="num" column="NUM"/>
+		<collection property="category" ofType="category" column="num=NUM" javaType="list" select="getCtgData"/>
+	</resultMap>
+	<select id="getData" resultMap="company-selectmap">
+		select * from company where num=#{num}
+	</select>
+	<select id="getCtgData" resultType="category">
+		select * from category where num=#{num}
+	</select>
+	<select id="searchaddr" parameterType="String" resultType="empAccount">
+	select addr from company left outer join emp_account on company.empname=emp_account.empname
+	</select>
+	<insert id="insertGonggo" parameterType="company">
+		insert into company (empname,job,jobgroup,empcontent,empimg,deadline,writeday) 
+		values (#{empname},#{job},#{jobgroup},#{empcontent},#{empimg},STR_TO_DATE(#{deadline},'%Y-%m-%d'),now())
+	</insert>
+	<insert id="insertCategory" parameterType="category">
+		insert into category (ctg,tag,num) 
+		values (#{ctg, jdbcType=VARCHAR},#{tag, jdbcType=VARCHAR},#{num})
+	</insert>
+	<select id="getInsertNum" resultType="int">
+		select LAST_INSERT_ID()
+	</select>
+	<delete id="deleteGonggo" parameterType="String">
+			set foreign_key_checks=0;
+			delete from company where num=#{num};
+			set foreign_key_checks = 1;
+	</delete>
+	<delete id="deleteCategory" parameterType="String">
+		set foreign_key_checks=0;
+		delete from category where num=#{num};
+		set foreign_key_checks = 1;
+	</delete>
+	
+	<update id="updateGonggo" parameterType="company">
+		update company set job=#{job},jobgroup=#{jobgroup},empcontent=#{empcontent},empimg=#{empimg},deadline=STR_TO_DATE(#{deadline},'%Y-%m-%d') where num=#{num}
+	</update>
+	<update id="insertmoney" parameterType="company">
+		update company set amount=#{amount},guipday=now() where num=#{num}
+	</update>
+		<!-- bookmark -->
+	<select id="searchNum" parameterType="Hashmap" resultType="int">
+		select count(*) from bookmark where id=#{id} and num=#{num}
+	</select>
+	<insert id="insertBookmark" parameterType="Hashmap">
+		insert into bookmark (id,num) values (#{id},#{num})
+	</insert>
+	<delete id="deleteBookmark" parameterType="Hashmap">
+		delete from bookmark where id=#{id} and num=#{num}
+	</delete>
+	<select id="getCountOfBookmark" parameterType="String" resultType="int">
+		select count(*) from bookmark where id=#{id}
+	</select>
+	<select id="getListOfCompany" parameterType="String" resultType="company">
+		select bookmark.id,company.num,company.empname,company.jobgroup,company.empcontent,company.empimg 
+		from company inner join bookmark
+		on company.num = bookmark.num
+		where id=#{id}
+	</select>
+	<select id="getListOfCompany_paging" parameterType="Hashmap" resultType="company">
+		select bookmark.id,company.num,company.empname,company.jobgroup,company.job,company.empimg,company.deadline 
+		from company inner join bookmark
+		on company.num = bookmark.num
+		where id=#{id}
+		limit #{start},#{perpage};
+	</select>
+	<select id="getListOfCompany_paging_book" parameterType="Hashmap" resultType="company">
+		select bookmark.id,company.num,company.empname,company.jobgroup,company.job,company.empimg,company.deadline 
+		from company inner join bookmark
+		on company.num = bookmark.num
+		where id=#{id} and company.empname like concat('%',#{keyword},'%') or company.job like concat('%',#{keyword},'%')
+		or company.jobgroup like concat('%',#{keyword},'%')
+		limit #{start},#{perpage};
+	</select>
+		<select id="getCountOfBookmark_search" parameterType="Hashmap" resultType="int">
+		select count(*)
+		from company inner join bookmark
+		on company.num = bookmark.num
+		where id=#{id} and company.empname like concat('%',#{keyword},'%') or company.job like concat('%',#{keyword},'%')
+		or company.jobgroup like concat('%',#{keyword},'%')
+	</select>
+	
+	<!-- apply -->
+	<insert id="insertApply" parameterType="apply">
+		insert into apply (id,num,num_r) values (#{id},#{num},#{num_r})
+	</insert>
+	<select id="getCountOfApply" parameterType="String" resultType="int">
+		select count(*) from apply where id=#{id}
+	</select>
+	<select id="checkApply" parameterType="Hashmap" resultType="int">
+		select count(*) from apply where id=#{id} and num=#{num}
+	</select>
+	<select id="getApplyListOfCompany_paging" parameterType="Hashmap" resultType="company">
+		select apply.id,company.num,company.empname,company.jobgroup,company.job,company.empimg,company.deadline
+		from company inner join apply
+		on company.num = apply.num
+		where id=#{id}
+		limit #{start},#{perpage};
+	</select>
+	<select id="getApplyListOfCompany" parameterType="Hashmap" resultType="company">
+		select apply.id,company.num,company.empname,company.jobgroup,company.job,company.empimg,company.deadline
+		from company inner join apply
+		on company.num = apply.num
+		where id=#{id}
+	</select>
+	<delete id="deleteApply" parameterType="Hashmap">
+		delete from apply where id=#{id} and num=#{num}
+	</delete>
+	
+	<!-- 관리자 페이지 출력 -->
+	<select id="getAllCompany" resultType="company" >
+		 select * from company order by num desc;  
+	</select>
+		
+	<!-- 채용공고 list -->
+	<select id="searchListByTag" parameterType="String" resultType="company">
+		select * from company left outer join category on (company.num=category.num) where tag=#{tag};
+	</select>
+	
+	<select id="searchByJob" parameterType="String" resultType="company">
+		select * from company where jobgroup=#{jobgroup};
+	</select>
+	
+	<select id="searchByArea" parameterType="String" resultType="company">
+		select * from company inner join emp_account on company.empname=emp_account.empname where emp_account.addr LIKE CONCAT('%',#{addr},'%');
+	</select>
+	
+</mapper>

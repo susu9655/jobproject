@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.emplogin.EmpAccountMapper">
+
+	 <select id="getTotalCountOfEmp" resultType="int">
+		select count(*) from emp_account
+	</select>
+	
+	<!-- parameterType은 아이디니까 String, resultType는 갯수를 반환할거니까 int  -->
+	<select id="emailCheckOfEmp" parameterType="HashMap" resultType="int">
+		select count(*) from emp_account where num=#{num} and email=#{email}
+	</select>
+	
+	<select id="searchEmpName" parameterType="String" resultType="String">
+		select empname from emp_account where email=#{email}
+	</select>
+	
+	<select id="searchEmpNum" parameterType="String" resultType="String">
+		select num from emp_account where email=#{email}
+	</select>
+	
+	<select id="searchAddr" parameterType="String" resultType="String">
+		select addr from emp_account where empname=#{empname}
+	</select>
+
+	<!-- create_date sql 컬럼 오타났지만 그냥 그대로 씀 -->
+	<insert id="insertOfEmp" parameterType="empAccount">
+	 	insert into emp_account (managername, team, hp, email, password, empname, empserial, country, area, addr, biztype, staffnum, establishyear,create_date)
+	 	values (#{managername},#{team},#{hp},#{email},#{password},#{empname},#{empserial},#{country},#{area},#{addr},#{biztype},#{staffnum},#{establishyear},now())
+	</insert>
+	
+	<select id="loginCheckOfEmp" parameterType="HashMap" resultType="int">
+		select count(*) from emp_account where email=#{email} and password=#{password}
+	</select>
+	
+	<select id="getdataOfEmp" resultType="empAccount">
+		select * from emp_account where num=#{num}
+	</select>
+	
+	<update id="updateOfEmp" parameterType="empAccount">
+		update emp_account set managername=#{managername},team=#{team},hp=#{hp},email=#{email},password=#{password},
+		empname=#{empname},empserial=#{empserial},country=#{country},area=#{area},addr=#{addr},biztype=#{biztype},staffnum=#{staffnum},establishyear=#{establishyear} where num=#{num}   
+	</update>
+	
+		<!-- 관리자페이지에 출력--> 
+	<select id="getAllEmpAccount" resultType="empAccount">
+		select * from emp_account order by email desc
+	</select>
+	
+	<delete id="deleteEmpAccount" parameterType="String">
+		delete  from emp_account where num = #{num}
+	</delete>
+	
+	<!-- 기업리뷰 -->
+	<!-- 기업 데이터 출력 -->
+	<select id="getEmpData" parameterType="String" resultType="empAccount">
+		select * from emp_account where empname=#{empname}
+	</select>
+	
+</mapper>

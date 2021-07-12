@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.salary.SalaryMapper">
+
+<!-- 직군, 직무 검색시 연차별 연봉 출력 -->
+	<select id="SearchJob" resultType="salary" parameterType="String">
+		select career,salary from salary where job=#{job} and jobgroup=#{jobgroup}
+	</select>
+
+<!-- salarylist 초기값 -->
+	<select id="salarydefault" resultType="salary" >
+		select career,salary from salary where job='it/인터넷' and jobgroup='웹개발자'
+	</select>
+	
+<!-- 직군, 직군, 연차에 따른 연봉값 출력 -->
+	<select id="SearchSal" resultType="int" parameterType="String">
+		select salary from salary where job=#{job} and jobgroup=#{jobgroup} and career=#{career}
+	</select>
+</mapper>

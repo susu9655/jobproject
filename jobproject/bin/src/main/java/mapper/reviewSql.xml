@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.review.reviewMapper">
+	<select id="getTotalCount" resultType="int" parameterType="String">
+		select count(*) from review where email='${email}'
+	</select>
+	
+	<!-- 총 리뷰 개수 -->
+	<select id="TotalCount" resultType="int">
+		select count(*) from review
+	</select>
+	
+	<!-- 검색 리뷰 개수 -->
+	<select id="TotalCountOfSearch" resultType="int" parameterType="String">
+		SELECT count(distinct empname) FROM review WHERE empname like CONCAT('%',#{empname},'%')
+	</select>
+
+	<!-- review테이블 데이터 추가 -->
+	<insert id="insertReview" parameterType="review">
+		insert into review (email,empname,prenow,job_group,good,bad,rating,cul,imp,env,sal,ceo,writeday) 
+		select #{email},#{empname},#{prenow},#{job_group},#{good},#{bad},#{rating},#{cul},#{imp},#{env},#{sal},#{ceo},now() 
+		FROM DUAL WHERE NOT EXISTS (select email,empname,prenow,job_group,good,bad,rating,cul,imp,env,sal,ceo,writeday 
+		FROM review where email=#{email} and empname=#{empname})
+	</insert>
+
+	
+	<!-- review테이블 전체 출력 -->
+	<select id="getReviewData" resultType="review" parameterType="String">
+		select * from review
+	</select>
+	
+	<!--  empname에 해당하는 데이터 출력(3개씩 페이징처리)-->
+	<select id="getReviewDataOfEmp" resultType="review" parameterType="HashMap">
+		select * from review where empname=#{empname} order by writeday desc 
+		limit #{start},#{perpage};
+	</select>
+
+	
+	<!-- 기업명 조회 -->
+	<select id="selectEmpname" resultType="review" parameterType="int">
+		select empname, good, round(avg(rating),1) as rating from review group by empname order by writeday desc 
+		limit #{start},#{perpage};
+	</select>
+	
+	<!-- 기업명 조회 리뷰많은 순-->
+	<select id="selectEmpnameOflargest" resultType="review" parameterType="int">
+		select empname, good, round(avg(rating),1) as rating, count(*) as reviewcount from review group by empname order by count(*) desc 
+		limit #{start},#{perpage};
+	</select>
+	
+	<!-- 기업명 조회 평점높은 순-->
+	<select id="selectEmpnameOfrating" resultType="review" parameterType="int">
+		select empname, good, round(avg(rating),1) as rating from review group by empname order by rating desc 
+		limit #{start},#{perpage};
+	</select>
+	
+	<!-- 기업명 조회  도움이돼요 순-->
+	<select id="selectEmpnameOfhelpful" resultType="review" parameterType="int">
+		select empname, good, round(avg(rating),1) as rating from review group by empname order by likes desc 
+		limit #{start},#{perpage};
+	</select>
+	
+		
+	<select id="selectEmpnameCount" resultType="int">
+		select count(DISTINCT empname) from review
+	</select>
+
+	<!--  기업 총 평가 평균-->
+	<select id="avgRating" resultType="float" parameterType="String">
+		select round(avg(rating),1) from review where empname=#{empname};
+	</select>
+	
+	<!--  사내문화 평균-->
+	<select id="avgCul" resultType="float" parameterType="String">
+		select round(avg(cul),1) from review where empname=#{empname};
+	</select>
+	
+	<!--  자기개발 평균-->
+	<select id="avgImp" resultType="float" parameterType="String">
+		select round(avg(imp),1) from review where empname=#{empname};
+	</select>
+	
+	<!--  근무환경 평균-->
+	<select id="avgEnv" resultType="float" parameterType="String">
+		select round(avg(env),1) from review where empname=#{empname};
+	</select>
+	
+	<!--  급여 및 복지 평균-->
+	<select id="avgSal" resultType="float" parameterType="String">
+		select round(avg(sal),1) from review where empname=#{empname};
+	</select>
+	
+	<!--  경영진 평균-->
+	<select id="avgCeo" resultType="float" parameterType="String">
+		select round(avg(ceo),1) from review where empname=#{empname};
+	</select>
+	
+	<!-- 기업명 별 리뷰개수 -->
+	<select id="review0fEmp" resultType="int" parameterType="String">
+		select count(*) from review where empname=#{empname}
+	</select>
+	
+	<!-- 기업이름 검색 -->
+	<select id="searchEmpname" resultType="review" parameterType="String">
+		SELECT empname,good, round(avg(rating),1) as rating FROM review WHERE empname LIKE CONCAT('%',#{empname},'%')
+		 group by empname order by likes desc
+	</select>
+
+	<!-- num에 해당하는 추천수 증가 -->
+	<update id="insertReviewOflikes" parameterType="String">
+		update review set likes=likes+1 where num=#{num}
+	</update>
+	
+	<!-- 추천 누른 id 데이터 추가 -->
+	<insert id="insertlikes" parameterType="String">
+		INSERT INTO likes(email,num) SELECT #{email},#{num} FROM DUAL WHERE NOT EXISTS 
+		(SELECT email, num FROM likes WHERE email=#{email} and num=#{num})
+	</insert>
+	
+	<!-- likes 추천했으면1 안했으면0 반환-->
+	<select id="countOflikes" resultType="int" parameterType="String">
+		select count(*) from likes where email=#{email} and num=#{num}
+	</select>
+	
+	<!-- num에 해당하는 데이터, 좋아요 수  -->
+	<select id="countOfReviewLikes" resultType="int" parameterType="String">
+		select likes from review where num=#{num}
+	</select>
+		
+	<!-- 리뷰 추천 많은 순으로 장점 2개 출력 -->
+	<select id="likesGood" parameterType="String" resultType="review">
+		select good from review where empname=#{empname} order by likes desc limit 2
+	</select>
+	
+	<!-- my기업리뷰 email로 작성한 리뷰 출력 -->
+	<select id="myreviewOfEmail" parameterType="String" resultType="review">
+		select * from review where email=#{email} order by writeday desc
+	</select>
+	
+	<!-- my기업리뷰 삭제 -->
+	<delete id="deleteReview" parameterType="int">
+		delete from review where num=#{num}
+	</delete>
+	
+	<!-- num데이터 반환 -->
+	<select id="getData" parameterType="int" resultType="review">
+		select * from review where num=#{num}
+	</select>
+	
+	<!-- my기업리뷰 수정 -->
+	<update id="updateReview" parameterType="review">
+		UPDATE review SET good =#{good}, bad =#{bad}, 
+		rating =#{rating}, cul =#{cul}, imp =#{imp}, env =#{env}, sal =#{sal}, 
+		ceo =#{ceo} WHERE num =#{num}
+	</update>	
+	
+	<!-- 관리자페이지에 출력--> 
+	<select id="getAllReview" resultType="review">
+		select * from review order by num desc
+	</select>
+	<delete id="deleteAdminReview" parameterType="String">
+		delete from review where num=#{num}
+	</delete>
+
+	
+	
+</mapper>

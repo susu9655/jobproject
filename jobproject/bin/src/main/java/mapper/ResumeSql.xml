@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.resume.ResumeMapper">
+	<!-- 로그인한 회원의 이력서 출력 -->
+	<select id="getDataOfResume" parameterType="String" resultType="resume">
+		select * from resume where user_id=#{user_id}
+	</select>
+	
+	<!-- 이력서 출력을 위한 resultMap 선언 -->
+	<resultMap type="resume" id="resume-selectmap">
+		<id property="num_r" column="NUM_R"/>
+		<result property="skill" column="SKILL"/>
+		<collection property="carer" ofType="carer" column="num_r=NUM_R" javaType="list" select="getCarerList"/>
+		<collection property="award" ofType="award" column="num_r=NUM_R" javaType="list" select="getAWwardList"/>
+		<collection property="education" ofType="education" column="num_r=NUM_R" javaType="list" select="getEducationList"/>
+		<collection property="fore" ofType="fore" column="num_r=NUM_R" javaType="list" select="getForeList"/>
+	</resultMap>
+	
+	
+	<select id="getResumeOneData" resultMap="resume-selectmap">
+		select * from resume where num_r=#{num_r}
+	</select>
+	<select id="getCarerList" resultType="carer">
+		select startday as c_startday, endday as c_endday,company,department from carer where num_r=#{num_r}
+	</select>
+	<select id="getAWwardList" resultType="award">
+		select startday as a_startday,activity,detail, endday as a_endday from award where num_r=#{num_r}
+	</select>
+	<select id="getEducationList" resultType="education">
+		select startday as e_startday, endday as e_endday,school,major from education where num_r=#{num_r}
+	</select>
+	<select id="getForeList" resultType="fore">
+		select * from fore where num_r=#{num_r}
+	</select>
+	
+	<!-- 데이터 삽입 -->
+	<insert id="insertResume" parameterType="resume">
+		insert into resume (intro,skill,link,nowdate,user_id) values (#{intro},#{skill},#{link},now(),#{user_id})
+	</insert>
+	<select id="getInsertNum" resultType="int">
+		select LAST_INSERT_ID()
+	</select>
+	<insert id="insertAward" parameterType="award">
+		insert into award (activity,detail,endday,startday,num_r) values (#{activity, jdbcType=VARCHAR},#{detail, jdbcType=VARCHAR},#{a_endday, jdbcType=VARCHAR},#{a_startday, jdbcType=VARCHAR},#{num_r})
+	</insert>
+	<insert id="insertCarer" parameterType="carer">
+		insert into carer (company,department,endday,startday,num_r) values (#{company, jdbcType=VARCHAR},#{department, jdbcType=VARCHAR},#{c_endday, jdbcType=VARCHAR},#{c_startday, jdbcType=VARCHAR},#{num_r})
+	</insert>
+	<insert id="insertEducation" parameterType="education">
+		insert into education (school,major,endday,startday,num_r) values (#{school, jdbcType=VARCHAR},#{major, jdbcType=VARCHAR},#{e_endday, jdbcType=VARCHAR},#{e_startday, jdbcType=VARCHAR},#{num_r})
+	</insert>
+	<insert id="insertFore" parameterType="fore">
+		insert into fore (lang,level,num_r) values (#{lang, jdbcType=VARCHAR},#{level, jdbcType=VARCHAR},#{num_r})
+	</insert>
+	
+	<!-- 데이터 삭제 -->
+	<delete id="delresume" parameterType="String">
+			set foreign_key_checks=0;
+			delete from resume where num_r=#{num_r};
+			set foreign_key_checks = 1;
+	</delete>
+	<delete id="delAward" parameterType="String">
+		set foreign_key_checks=0;
+		delete from award where num_r=#{num_r};
+		set foreign_key_checks = 1;
+	</delete>
+	<delete id="delCarer" parameterType="String">
+		delete from carer where num_r=#{num_r};
+	</delete>
+	<delete id="delEducation" parameterType="String">
+		set foreign_key_checks=0;
+		delete from education where num_r=#{num_r};
+		set foreign_key_checks = 1;
+	</delete>
+	<delete id="delFore" parameterType="String">
+		set foreign_key_checks=0;
+		delete from fore where num_r=#{num_r};
+		set foreign_key_checks = 1;
+	</delete>
+	
+	<!-- 데이터 update -->
+	<update id="updateResume" parameterType="resume">
+		update resume set intro=#{intro},skill=#{skill},link=#{link} where num_r=#{num_r}
+	</update>
+	
+	<!-- 기업리뷰 사용 -->
+	<!-- 로그인시 경력사항 기업 출력 -->
+	<select id="getIdCareer" resultType="carer" parameterType="int">
+		select company, department, startday as c_startday, endday as c_endday from carer left join resume on carer.num_r = resume.num_r where resume.user_id=#{user_id}
+	</select>
+</mapper>

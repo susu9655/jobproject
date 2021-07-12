@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.news.newsMapper">
+	
+	<!-- 데이터 개수 -->
+	<select id="getTotalCount" resultType="int">
+		select count(*) from news
+	</select>
+	
+	<!-- 전체 데이터 반환(메인페이지-페이징처리) -->
+	<select id="getDataOfNews" resultType="news" parameterType="int">
+		select * from news order by writeday desc limit #{start},#{perpage};
+	</select>
+	
+	<!-- num에 해당하는 데이터 반환(상세페이지) -->
+	<select id="getDataOfNum" resultType="news" parameterType="String">
+		select * from news where num=#{num}
+	</select>
+
+	<!-- 뉴스 최신일자 4개 출력(메인페이지-최신뉴스) -->
+	<select id="getLatestData" resultType="news">
+		select * from news order by writeday desc limit 4
+	</select>
+	
+	<!-- 기사 클릭 조회수 증가 -->
+	<update id="readcount" parameterType="String">
+		UPDATE news SET readcount=readcount+1 where num=#{num}
+	</update>
+	
+	<!-- 조회수 조회 -->
+	<select id="getReadcount" parameterType="String" resultType="int">
+		select readcount from news where num=#{num}
+	</select>
+	
+	<!-- 기사 제목 검색 -->
+	<select id="searchNews" resultType="news" parameterType="String">
+		SELECT * FROM news WHERE title LIKE CONCAT('%',#{title},'%') 
+		order by writeday desc
+	</select>
+
+</mapper>

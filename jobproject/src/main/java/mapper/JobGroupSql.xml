@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.profile.JobGroupMapper">
+	<insert id="insertJobOfJobGroup" parameterType="jobgroup">
+		insert into specialixed_field (job_group,job,career,id) values (#{job_group},#{job},#{career},#{id})
+	</insert>
+	<select id="searchIdOfJobGroup" parameterType="int" resultType="int">
+		select count(*) from specialixed_field where id=#{id}
+	</select>
+	<update id="updateJobOfJobGroup" parameterType="jobgroup">
+		update specialixed_field set job_group=#{job_group},job=#{job},career=#{career} where id=#{id}
+	</update>
+	<select id="getDataOfJobGroup" parameterType="int" resultType="jobgroup">
+		select * from specialixed_field where id=#{id}
+	</select>
+	
+	<!-- 추천공고 -->
+	<select id="getJobdata" resultType="String" parameterType="int">
+		select job_group from specialixed_field where id=#{id}
+	</select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.userlogin.UserAccountMapper">
+	 <select id="getTotalCountOfUserAccount" resultType="int">
+		select count(*) from user_account
+	</select>
+	
+	<insert id="insertUserAccount" parameterType="user">
+	 	insert into user_account (username, hp, password, email, role, provider, provider_id, create_date)
+	 	values (#{username},#{hp},#{password},#{email}, #{role}, #{provider}, #{providerId}, now())
+	</insert>
+	
+	<select id="findByUsername" parameterType="user" resultType="user">
+		SELECT * FROM user_account WHERE username = #{username}
+	</select>
+	
+	<delete id="deleteUserAccount" parameterType="String">
+		delete  from user_account where id = #{id}
+	</delete>
+	
+	<!-- <select id="loginCheckOfUserAccount" parameterType="HashMap" resultType="int">
+		select count(*) from user_account where email=#{email} and password=#{password}
+	</select>
+	
+	<select id="selectOneOfUserAccount" parameterType="HashMap" resultType="user">
+		select count(*) from user_account where email=#{email} and password=#{password}
+	</select>
+	
+	<select id="getuser" parameterType="user" resultType="user">
+		SELECT * FROM user_account WHERE id= #{id}
+	</select> -->
+
+	
+	<!-- <insert id="insertUserAccountGoogle" parameterType="user">
+	 	insert into user_account (username, password, email, role, provider, provider_id, create_date)
+	 	values (#{username},#{password},#{email}, #{role}, #{provider}, #{provider_id}, now())
+	</insert> -->
+	<update id="updatePasswordOfuser" parameterType="Hashmap">
+		update user_account set password=#{password} where id=#{user_id}
+	</update>
+	<update id="updateUser" parameterType="user">
+		update user_account set username=#{username}, email=#{email}, hp=#{hp} where id=#{id}
+	</update>
+	
+		<!-- 관리자페이지에 출력--> 
+	<select id="getAllUserAccount" resultType="user">
+		select * from user_account order by id  desc
+	</select>
+</mapper>

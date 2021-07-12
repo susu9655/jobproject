@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap');
+
+@font-face {
+    font-family: 'ELAND_Choice_M';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/ELAND_Choice_M.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root{
+	--font-color: #4e4e4e;
+	--border-gray-color : #dadada;
+	--job-blue-color: #021B80;
+	--job-blue-border-color: #06b350;
+}
+
+body *{
+	  font-family: 'ELAND_Choice_M';
+}
+
+.main-container{
+	width:100%;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	margin-top: 21px;
+}
+
+.main-container .main-wrap .logo-wrap{
+	padding-top:55px;
+	display:flex;	
+	flex-direction: column;
+	align-items: center;
+}
+
+.intro-ment-section-wrap{
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 40px;
+
+}
+
+.login-input-section-wrap{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-input-wrap{
+	width: 465px;
+	height :48px;
+	border: solid 1px var(	--border-gray-color );
+	background: white;
+}
+
+.email-wrap{
+	margin-top: 13px;
+}
+
+.password-wrap{
+	margin-top: 13px;
+}
+
+.login-input-wrap input{
+	border: none;
+	width:430px;
+	margin-top: 10px;
+	font-size: 14px;
+	margin-left: 10px;
+	height:30px;
+}
+
+.login-button-wrap .btn btn-primary{
+	padding-top: 13px;
+}
+
+
+footer{
+	padding-top: 50px;
+	padding-bottom: 15px;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	width:768px;
+
+}
+
+.copyright-wrap{
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 15px;
+}
+
+.copyright-wrap >span{
+ 	font-size: 9pt;
+}
+
+.copyright-wrap .term-of-service>span{
+ 	font-size: 9pt;
+ 	align-items: center;
+}
+

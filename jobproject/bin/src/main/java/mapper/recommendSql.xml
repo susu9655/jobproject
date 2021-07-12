@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="job.data.recommend.recommendMapper">
+	
+	<!-- 추천공고(전문분야에따라 8개만) -->
+	<select id="recommendData" resultType="recommend" parameterType="String">
+		SELECT * FROM company WHERE job =#{job} order by deadline limit 8
+	</select>
+	
+	<!-- 북마크 체크 유(1)무(2) -->
+	<select id="bookmarkCheck" parameterType="int" resultType="int">
+		select count(*) from bookmark where id=#{id} and num=#{num}
+	</select>
+	
+	<!-- 북마크 저장 -->
+	<insert id="insertBookmark" parameterType="int">
+		insert into bookmark (id,num) values (#{id},#{num})
+	</insert>
+	
+	<!-- 북마크 삭제 -->
+	<delete id="deleteBookmark" parameterType="int">
+		delete from bookmark where id=#{id} and num=#{num}
+	</delete>
+	
+	<!-- 북마크 전체 데이터 -->
+	<select id="bookdata" resultType="bookmark" parameterType="int">
+		select * from bookmark where id=#{id}
+	</select>
+	
+	<!-- 공고 전체 데이터 -->
+	<select id="totalData" resultType="recommend">
+		select * from company order by writeday
+	</select>
+</mapper>
